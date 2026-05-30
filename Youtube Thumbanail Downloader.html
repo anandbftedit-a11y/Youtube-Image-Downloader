@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YouTube Thumbnail Downloader</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+.adsense{
+    border:2px solid rgba(0, 0, 0, 0.308);
+    height: 500px;
+    width: 100%;
+    
+}
+
+body{
+    background:#f5f5f5;
+    padding:30px;
+}
+
+.container{
+    max-width:1000px;
+    margin:auto;
+}
+
+h1{
+    text-align:center;
+    margin-bottom:25px;
+    color:#222;
+}
+
+.search-box{
+    display:flex;
+    gap:10px;
+    margin-bottom:25px;
+}
+
+input{
+    flex:1;
+    padding:15px;
+    border:1px solid #ddd;
+    border-radius:8px;
+    font-size:16px;
+}
+
+button{
+    padding:15px 25px;
+    border:none;
+    border-radius:8px;
+    background:#ff0000;
+    color:#fff;
+    font-size:16px;
+    cursor:pointer;
+}
+
+button:hover{
+    opacity:0.9;
+}
+
+.video-title{
+    display:none;
+    background:#fff;
+    padding:15px;
+    border-radius:10px;
+    margin-bottom:20px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.08);
+}
+
+.gallery{
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+}
+
+.card{
+    background:#fff;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.1);
+    text-align:center;
+}
+
+.card img{
+    display:block;
+    width:auto;
+    height:auto;
+    max-width:100%;
+    margin:0 auto;
+    border-radius:8px;
+}
+
+.card-body{
+    margin-top:15px;
+}
+
+.card h3{
+    margin-bottom:10px;
+    color:#333;
+}
+
+.dimension{
+    margin-bottom:15px;
+    color:#666;
+    font-size:14px;
+}
+
+.download-btn{
+    padding:10px 18px;
+    border:none;
+    border-radius:6px;
+    background:#22c55e;
+    color:#fff;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.download-btn:hover{
+    opacity:0.9;
+}
+
+@media(max-width:768px){
+    .search-box{
+        flex-direction:column;
+    }
+}
+</style>
+</head>
+<body>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9368910999013321"
+     crossorigin="anonymous"></script>
+<!-- Testtt -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-9368910999013321"
+     data-ad-slot="3079685982"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9368910999013321"
+     crossorigin="anonymous"></script>
+<ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="ca-pub-9368910999013321"
+     data-ad-slot="4881676640"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9368910999013321"
+     crossorigin="anonymous"></script>
+<ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="ca-pub-9368910999013321"
+     data-ad-slot="7976789446"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+<div class="container">
+
+    <h1>YouTube Thumbnail Downloader</h1>
+
+    <div class="search-box">
+        <input
+            type="text"
+            id="videoUrl"
+            placeholder="Paste YouTube Video or Shorts URL">
+        <button onclick="fetchThumbs()">
+            Get Thumbnails
+        </button>
+    </div>
+
+    <div id="videoTitle" class="video-title">
+        <h2 id="titleText"></h2>
+    </div>
+
+    <div id="gallery" class="gallery"></div>
+
+</div>
+
+<script>
+
+function getVideoId(url){
+
+    const patterns = [
+        /youtube\.com\/watch\?v=([^&]+)/,
+        /youtu\.be\/([^?&]+)/,
+        /youtube\.com\/shorts\/([^?&]+)/
+    ];
+
+    for(const pattern of patterns){
+        const match = url.match(pattern);
+        if(match) return match[1];
+    }
+
+    return null;
+}
+
+async function downloadImage(url, filename){
+
+    try{
+
+        const response = await fetch(url);
+        const blob = await response.blob();
+
+        const blobUrl = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = blobUrl;
+        a.download = filename;
+
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        URL.revokeObjectURL(blobUrl);
+
+    }catch(error){
+
+        console.error(error);
+        alert("Download failed");
+
+    }
+}
+
+async function fetchThumbs(){
+
+    const url =
+        document.getElementById("videoUrl").value.trim();
+
+    const videoId = getVideoId(url);
+
+    if(!videoId){
+        alert("Please enter a valid YouTube URL");
+        return;
+    }
+
+    try{
+
+        const response = await fetch(
+            `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`
+        );
+
+        const data = await response.json();
+
+        const title =
+            data.title.replace(/[<>:"/\\|?*]/g,'');
+
+        document.getElementById("titleText").textContent =
+            title;
+
+        document.getElementById("videoTitle").style.display =
+            "block";
+
+        const sizes = [
+            {
+                name:"Max Resolution",
+                file:"maxresdefault.jpg"
+            },
+            {
+                name:"Standard Definition",
+                file:"sddefault.jpg"
+            },
+            {
+                name:"High Quality",
+                file:"hqdefault.jpg"
+            },
+            {
+                name:"Medium Quality",
+                file:"mqdefault.jpg"
+            },
+            {
+                name:"Default",
+                file:"default.jpg"
+            }
+        ];
+
+        const gallery =
+            document.getElementById("gallery");
+
+        gallery.innerHTML = "";
+
+        sizes.forEach(size=>{
+
+            const imageUrl =
+                `https://img.youtube.com/vi/${videoId}/${size.file}`;
+
+            const card =
+                document.createElement("div");
+
+            card.className = "card";
+
+            card.innerHTML = `
+                <img src="${imageUrl}" alt="${size.name}">
+                <div class="card-body">
+                    <h3>${size.name}</h3>
+                    <p class="dimension">Loading dimensions...</p>
+
+                    <button
+                        class="download-btn"
+                        onclick="downloadImage(
+                            '${imageUrl}',
+                            '${title}_${size.name}.jpg'
+                        )">
+                        Download Thumbnail
+                    </button>
+                </div>
+            `;
+
+            gallery.appendChild(card);
+
+            const img =
+                card.querySelector("img");
+
+            const dimension =
+                card.querySelector(".dimension");
+
+            img.onload = () => {
+
+                dimension.textContent =
+                    img.naturalWidth +
+                    " × " +
+                    img.naturalHeight +
+                    " px";
+
+            };
+
+            img.onerror = () => {
+
+                dimension.textContent =
+                    "Thumbnail not available";
+
+            };
+
+        });
+
+    }catch(error){
+
+        console.error(error);
+
+        alert(
+            "Unable to fetch video information."
+        );
+
+    }
+}
+</script>
+
+</body>
+</html>
